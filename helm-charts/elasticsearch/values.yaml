@@ -43,19 +43,16 @@ service:
   httpPort: 9200
   transportPort: 9300
 
-# Custom readiness probe without authentication
+# Simple readiness probe without authentication
 readinessProbe:
   failureThreshold: 3
   initialDelaySeconds: 30
   periodSeconds: 10
   successThreshold: 3
   timeoutSeconds: 5
-  exec:
-    command:
-      - bash
-      - -c
-      - |
-        curl -f http://localhost:9200/_cluster/health || exit 1
+  httpGet:
+    path: /_cluster/health
+    port: 9200
 
 # Environment variables for single-node setup
 extraEnvs:
@@ -74,3 +71,6 @@ protocol: http
 
 # Disable all security-related mounts
 secretMounts: []
+
+# IMPORTANT: Override cluster bootstrap settings for single-node
+clusterInitialMasterNodes: []
