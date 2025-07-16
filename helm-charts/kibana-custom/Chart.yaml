@@ -1,0 +1,5 @@
+apiVersion: v2
+name: custom-kibana
+description: Simple Kibana Chart
+version: 0.1.0
+appVersion: 8.5.1

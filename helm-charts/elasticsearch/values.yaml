@@ -1,0 +1,62 @@
+# Elasticsearch Helm Chart Values for Development
+clusterName: "elasticsearch"
+nodeGroup: "master"
+
+# Single node setup for development
+replicas: 1
+minimumMasterNodes: 1
+
+# Resource allocation for development
+resources:
+  requests:
+    cpu: "300m"
+    memory: "1Gi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Storage configuration
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: "standard"
+  resources:
+    requests:
+      storage: 10Gi
+
+# Security settings for development (disabled for simplicity)
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+    xpack.security.enrollment.enabled: false
+    xpack.security.http.ssl.enabled: false
+    xpack.security.transport.ssl.enabled: false
+
+# Service configuration
+service:
+  type: ClusterIP
+  httpPort: 9200
+  transportPort: 9300
+
+# Health checks
+readinessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
+
+# Environment variables for single-node setup
+extraEnvs:
+  - name: discovery.type
+    value: single-node
+  - name: ES_JAVA_OPTS
+    value: "-Xmx512m -Xms512m"
+
+# Image configuration
+image: "docker.elastic.co/elasticsearch/elasticsearch"
+imageTag: "8.5.1"
+imagePullPolicy: "IfNotPresent"
+
+# Protocol
+protocol: http
+

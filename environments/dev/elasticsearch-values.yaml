@@ -1,0 +1,23 @@
+# Development-specific overrides for Elasticsearch
+nameOverride: "elasticsearch-dev"
+
+resources:
+  requests:
+    cpu: "300m"
+    memory: "1Gi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Single node for development
+replicas: 1
+minimumMasterNodes: 1
+
+# Smaller storage for dev
+volumeClaimTemplate:
+  resources:
+    requests:
+      storage: 5Gi
+
+
+

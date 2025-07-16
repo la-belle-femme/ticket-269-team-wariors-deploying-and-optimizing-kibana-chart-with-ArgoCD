@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nameOverride }}-kibana
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: kibana
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kibana
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: kibana
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: kibana
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 5601
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: "{{ .Values.elasticsearch.hosts }}"
+        - name: SERVER_HOST
+          value: "0.0.0.0"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /app/kibana
+            port: 5601
+          initialDelaySeconds: 30
+          periodSeconds: 10
