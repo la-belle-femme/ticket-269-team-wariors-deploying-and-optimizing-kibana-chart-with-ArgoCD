@@ -4,7 +4,9 @@ nodeGroup: "master"
 
 # Single node setup for development
 replicas: 1
-minimumMasterNodes: 1
+
+# IMPORTANT: Remove minimumMasterNodes to avoid cluster.initial_master_nodes
+# minimumMasterNodes: 1  # This causes the conflict
 
 # Resource allocation for development
 resources:
@@ -43,19 +45,9 @@ service:
   httpPort: 9200
   transportPort: 9300
 
-# IMPORTANT: Completely override the default readiness probe
+# Disable the default readiness probe to avoid conflicts
 readinessProbe:
-  enabled: true
-  failureThreshold: 3
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  successThreshold: 3
-  timeoutSeconds: 5
-  httpGet:
-    path: /_cluster/health
-    port: 9200
-  # Explicitly disable exec probe
-  exec: null
+  enabled: false
 
 # Environment variables for single-node setup
 extraEnvs:
@@ -74,6 +66,3 @@ protocol: http
 
 # Disable all security-related mounts
 secretMounts: []
-
-# IMPORTANT: Remove cluster bootstrap settings for single-node
-clusterInitialMasterNodes: []
