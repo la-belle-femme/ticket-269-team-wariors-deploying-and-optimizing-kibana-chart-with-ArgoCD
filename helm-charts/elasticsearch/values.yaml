@@ -21,7 +21,7 @@ volumeClaimTemplate:
   storageClassName: "standard"
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
 
 # CRITICAL: Disable authentication completely
 createCert: false
@@ -43,8 +43,9 @@ service:
   httpPort: 9200
   transportPort: 9300
 
-# Simple readiness probe without authentication
+# IMPORTANT: Completely override the default readiness probe
 readinessProbe:
+  enabled: true
   failureThreshold: 3
   initialDelaySeconds: 30
   periodSeconds: 10
@@ -53,6 +54,8 @@ readinessProbe:
   httpGet:
     path: /_cluster/health
     port: 9200
+  # Explicitly disable exec probe
+  exec: null
 
 # Environment variables for single-node setup
 extraEnvs:
@@ -72,5 +75,5 @@ protocol: http
 # Disable all security-related mounts
 secretMounts: []
 
-# IMPORTANT: Override cluster bootstrap settings for single-node
+# IMPORTANT: Remove cluster bootstrap settings for single-node
 clusterInitialMasterNodes: []
