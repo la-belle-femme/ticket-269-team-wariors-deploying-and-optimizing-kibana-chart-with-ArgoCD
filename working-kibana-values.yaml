@@ -1,0 +1,76 @@
+# Working Kibana Helm Chart Values
+replicas: 1
+
+# Image configuration
+image: "docker.elastic.co/kibana/kibana"
+imageTag: "8.5.1"
+imagePullPolicy: "IfNotPresent"
+
+# Resource allocation
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Elasticsearch connection - simple HTTP
+elasticsearchHosts: "http://elasticsearch-dev-master:9200"
+
+# Service configuration
+service:
+  type: NodePort
+  port: 5601
+  nodePort: 30561
+
+# Basic Kibana configuration
+kibanaConfig:
+  kibana.yml: |
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://elasticsearch-dev-master:9200"]
+
+# Disable all security features completely
+elasticsearchCredentialSecret: ""
+createCert: false
+secretMounts: []
+extraVolumes: []
+extraVolumeMounts: []
+
+# Disable service account token mounting
+automountServiceAccountToken: false
+
+# Simple environment variables
+extraEnvs:
+  - name: ELASTICSEARCH_HOSTS
+    value: "http://elasticsearch-dev-master:9200"
+  - name: SERVER_HOST
+    value: "0.0.0.0"
+
+# Disable problematic features
+lifecycle: {}
+extraInitContainers: []
+
+# Health checks - keep simple
+readinessProbe:
+  enabled: true
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
+
+# Security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+
+# Name override for consistency
+nameOverride: "kibana-dev"
+
+# Protocol
+protocol: http
+
+# Disable ingress
+ingress:
+  enabled: false

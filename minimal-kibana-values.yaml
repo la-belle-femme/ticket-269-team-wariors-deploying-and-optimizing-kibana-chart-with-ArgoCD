@@ -1,0 +1,50 @@
+replicas: 1
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Simple HTTP connection
+elasticsearchHosts: "http://elasticsearch-dev-master:9200"
+
+service:
+  type: NodePort
+  port: 5601
+  nodePort: 30561
+
+# Completely disable security and token mounting
+elasticsearchCredentialSecret: ""
+createCert: false
+secretMounts: []
+
+# Simple Kibana config
+kibanaConfig:
+  kibana.yml: |
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://elasticsearch-dev-master:9200"]
+
+# Disable all hooks and extra features
+extraInitContainers: []
+lifecycle: {}
+
+# Disable service account token mounting
+automountServiceAccountToken: false
+
+# Override environment variables to remove token reference
+extraEnvs:
+  - name: NODE_OPTIONS
+    value: "--max-old-space-size=1800"
+
+nameOverride: "kibana-dev"
+
+# Disable readiness probe that might interfere
+readinessProbe:
+  enabled: false
+
+# Disable all security-related volume mounts
+extraVolumes: []
+extraVolumeMounts: []

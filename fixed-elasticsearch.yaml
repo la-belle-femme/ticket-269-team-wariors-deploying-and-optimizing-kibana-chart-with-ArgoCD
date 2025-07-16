@@ -1,0 +1,28 @@
+replicas: 1
+minimumMasterNodes: 1
+
+# This is the key - we need to override cluster.initial_master_nodes
+clusterInitialMasterNodes: []
+
+esConfig:
+  elasticsearch.yml: |
+    discovery.type: single-node
+    xpack.security.enabled: false
+    xpack.security.enrollment.enabled: false
+
+resources:
+  requests:
+    cpu: 300m
+    memory: 1Gi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+persistence:
+  enabled: false
+
+esJavaOpts: "-Xms512m -Xmx512m"
+
+clusterName: "elasticsearch"
+nodeGroup: "master"
+antiAffinity: "soft"
