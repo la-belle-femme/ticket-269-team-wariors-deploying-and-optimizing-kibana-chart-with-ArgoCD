@@ -1,10 +1,5 @@
 nameOverride: "elasticsearch-dev"
 
-# Override readiness probe to use httpGet instead of exec
+# Disable readiness probe
 readinessProbe:
-  enabled: true
-  httpGet:
-    path: /_cluster/health
-    port: 9200
-  initialDelaySeconds: 30
-  periodSeconds: 10
+  enabled: false

@@ -4,7 +4,7 @@ nodeGroup: "master"
 replicas: 1
 minimumMasterNodes: 1
 
-# Generous resources
+# Generous resources  
 resources:
   requests:
     cpu: "1000m"
@@ -33,17 +33,9 @@ service:
   httpPort: 9200
   transportPort: 9300
 
-# FIXED: Simple readiness probe without authentication
+# DISABLE readiness probe completely
 readinessProbe:
-  enabled: true
-  failureThreshold: 3
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  successThreshold: 3
-  timeoutSeconds: 5
-  httpGet:
-    path: /_cluster/health
-    port: 9200
+  enabled: false
 
 extraEnvs:
   - name: discovery.type
