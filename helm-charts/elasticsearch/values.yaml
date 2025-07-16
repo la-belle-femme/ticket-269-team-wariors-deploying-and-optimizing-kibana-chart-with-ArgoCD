@@ -23,6 +23,12 @@ volumeClaimTemplate:
     requests:
       storage: 10Gi
 
+# CRITICAL: Disable authentication completely
+createCert: false
+secret:
+  enabled: false
+  password: ""
+
 # Security settings for development (disabled for simplicity)
 esConfig:
   elasticsearch.yml: |
@@ -37,13 +43,19 @@ service:
   httpPort: 9200
   transportPort: 9300
 
-# Health checks
+# Custom readiness probe without authentication
 readinessProbe:
   failureThreshold: 3
-  initialDelaySeconds: 10
+  initialDelaySeconds: 30
   periodSeconds: 10
   successThreshold: 3
   timeoutSeconds: 5
+  exec:
+    command:
+      - bash
+      - -c
+      - |
+        curl -f http://localhost:9200/_cluster/health || exit 1
 
 # Environment variables for single-node setup
 extraEnvs:
@@ -60,3 +72,5 @@ imagePullPolicy: "IfNotPresent"
 # Protocol
 protocol: http
 
+# Disable all security-related mounts
+secretMounts: []
