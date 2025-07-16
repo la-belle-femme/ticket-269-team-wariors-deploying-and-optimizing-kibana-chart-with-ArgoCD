@@ -1,9 +1,14 @@
-# Elasticsearch Helm Chart Values for Development
+# Elasticsearch Helm Chart Values - Single Node Development Setup
 clusterName: "elasticsearch"
 nodeGroup: "master"
 
-# Single node setup for development
+# Single node configuration - THE CORRECT WAY
 replicas: 1
+minimumMasterNodes: 1
+
+# CRITICAL: Use single node discovery - prevents cluster.initial_master_nodes
+esMajorVersion: "8"
+antiAffinity: "soft"
 
 # Resource allocation for development
 resources:
@@ -11,7 +16,7 @@ resources:
     cpu: "300m"
     memory: "1Gi"
   limits:
-    cpu: "500m"
+    cpu: "500m"  
     memory: "1Gi"
 
 # Storage configuration
@@ -22,50 +27,38 @@ volumeClaimTemplate:
     requests:
       storage: 5Gi
 
-# CRITICAL: Disable authentication completely
+# DISABLE ALL SECURITY
 createCert: false
 secret:
   enabled: false
-  password: ""
 
-# Security settings for development (disabled for simplicity)
 esConfig:
   elasticsearch.yml: |
     xpack.security.enabled: false
     xpack.security.enrollment.enabled: false
     xpack.security.http.ssl.enabled: false
     xpack.security.transport.ssl.enabled: false
+    discovery.type: single-node
 
-# Service configuration
+# Simple HTTP service
 service:
   type: ClusterIP
   httpPort: 9200
   transportPort: 9300
 
-# Disable the default readiness probe to avoid conflicts
+# DISABLE READINESS PROBE - it's causing issues
 readinessProbe:
   enabled: false
 
-# Environment variables for single-node setup
+# Basic environment
 extraEnvs:
-  - name: discovery.type
-    value: single-node
   - name: ES_JAVA_OPTS
     value: "-Xmx512m -Xms512m"
-  # IMPORTANT: Override the cluster.initial_master_nodes to empty
-  - name: cluster.initial_master_nodes
-    value: ""
 
-# Image configuration
+# Image
 image: "docker.elastic.co/elasticsearch/elasticsearch"
 imageTag: "8.5.1"
-imagePullPolicy: "IfNotPresent"
 
-# Protocol
+# HTTP protocol only
 protocol: http
-
-# Disable all security-related mounts
 secretMounts: []
-
-# Explicitly set single node discovery
-singleNode: true
