@@ -1,29 +1,26 @@
-# Elasticsearch Helm Chart Values for Development
 clusterName: "elasticsearch"
 nodeGroup: "master"
 
-# Single node setup
 replicas: 1
 minimumMasterNodes: 1
 
-# Adequate resources for proper functioning
+# Generous resources for t3.2xlarge
 resources:
   requests:
-    cpu: "500m"
-    memory: "2Gi"
-  limits:
     cpu: "1000m"
-    memory: "3Gi"
+    memory: "4Gi"
+  limits:
+    cpu: "2000m"
+    memory: "6Gi"
 
-# Storage configuration
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
   storageClassName: "standard"
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi
 
-# Security disabled for development
+# Security disabled
 esConfig:
   elasticsearch.yml: |
     xpack.security.enabled: false
@@ -31,28 +28,21 @@ esConfig:
     xpack.security.http.ssl.enabled: false
     xpack.security.transport.ssl.enabled: false
 
-# Service configuration  
 service:
   type: ClusterIP
   httpPort: 9200
   transportPort: 9300
 
-# Environment variables
 extraEnvs:
   - name: discovery.type
     value: single-node
   - name: ES_JAVA_OPTS
-    value: "-Xmx1g -Xms1g"
+    value: "-Xmx3g -Xms3g"
 
-# Image configuration
 image: "docker.elastic.co/elasticsearch/elasticsearch"
 imageTag: "8.5.1"
-imagePullPolicy: "IfNotPresent"
-
 protocol: http
-secretMounts: []
-
-# Disable problematic features
 createCert: false
 secret:
   enabled: false
+secretMounts: []
