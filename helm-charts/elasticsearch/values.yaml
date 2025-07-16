@@ -4,7 +4,7 @@ nodeGroup: "master"
 replicas: 1
 minimumMasterNodes: 1
 
-# Generous resources for t3.2xlarge
+# Generous resources
 resources:
   requests:
     cpu: "1000m"
@@ -32,6 +32,18 @@ service:
   type: ClusterIP
   httpPort: 9200
   transportPort: 9300
+
+# FIXED: Simple readiness probe without authentication
+readinessProbe:
+  enabled: true
+  failureThreshold: 3
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
+  httpGet:
+    path: /_cluster/health
+    port: 9200
 
 extraEnvs:
   - name: discovery.type

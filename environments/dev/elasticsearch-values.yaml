@@ -1,26 +1,10 @@
-# Development-specific overrides for Elasticsearch
 nameOverride: "elasticsearch-dev"
 
-# Updated resources for proper functioning with t3.2xlarge
-resources:
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "2000m"
-    memory: "6Gi"
-
-# Single node for development
-replicas: 1
-minimumMasterNodes: 1
-
-# Storage for dev
-volumeClaimTemplate:
-  resources:
-    requests:
-      storage: 20Gi
-
-# JVM settings for larger memory
-extraEnvs:
-  - name: ES_JAVA_OPTS
-    value: "-Xmx3g -Xms3g"
+# Override readiness probe to use httpGet instead of exec
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /_cluster/health
+    port: 9200
+  initialDelaySeconds: 30
+  periodSeconds: 10
